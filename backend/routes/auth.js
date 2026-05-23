@@ -6,10 +6,6 @@ import bcrypt from 'bcryptjs';
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-change-this-secret';
 
-if (process.env.NODE_ENV === 'production' && JWT_SECRET === 'dev-only-change-this-secret') {
-  console.warn('⚠️ WARNING: Using default JWT_SECRET in production. This is a massive security risk!');
-}
-
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 const toBase64Url = (value) =>
