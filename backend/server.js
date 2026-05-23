@@ -39,12 +39,33 @@ const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-app.use(
-  cors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
-    credentials: true,
-  })
-);
+const corsOptions = {
+  credentials: true,
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.length === 0) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    if (isProduction) {
+      try {
+        const { hostname } = new URL(origin);
+        if (hostname.endsWith('.vercel.app')) {
+          return callback(null, true);
+        }
+      } catch {
+        // ignore invalid origin URLs
+      }
+    }
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
