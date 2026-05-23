@@ -47,8 +47,6 @@ export const cartService = {
 export const orderService = {
   createOrder: (orderData) => api.post('/orders', orderData),
   getOrder: (orderId) => api.get(`/orders/${orderId}`),
-  // Get orders for the authenticated user
-  getOrders: () => api.get('/orders'),
   getOrdersByEmail: (email) => api.get('/orders/by-email', { params: { email } }),
   updateOrderStatus: (orderId, status) =>
     api.put(`/orders/${orderId}`, { status }),

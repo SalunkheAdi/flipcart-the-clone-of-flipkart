@@ -73,11 +73,11 @@ NODE_ENV=development
 #### Initialize Database Schema
 
 ```bash
-# From backend directory, run schema
-psql -U postgres -d flipkart -f database/schema.sql
+# From backend directory (creates products, cart, orders, users, wishlist tables)
+npm run db:init
 
-# Or if using the connection from .env
-psql -U [DB_USER] -d [DB_NAME] -f database/schema.sql
+# Or with psql directly:
+psql -U postgres -d flipkart -f database/schema.sql
 ```
 
 #### Seed Sample Data
@@ -262,6 +262,8 @@ flipcart_clone/
 - **Mobile**: Below 768px (1 column grid)
 
 ## 🚢 Deployment
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full production checklist (env vars, Render + Vercel steps, troubleshooting).
 
 ### Deploy Backend on Render
 

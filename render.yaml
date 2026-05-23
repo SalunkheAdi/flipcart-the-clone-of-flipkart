@@ -1,0 +1,31 @@
+# Render Blueprint — deploy backend + PostgreSQL from GitHub
+# Docs: https://render.com/docs/blueprint-spec
+
+databases:
+  - name: flipcart-db
+    databaseName: flipkart
+    user: flipkart
+    plan: free
+
+services:
+  - type: web
+    name: flipcart-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: flipcart-db
+          property: connectionString
+      - key: DB_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false

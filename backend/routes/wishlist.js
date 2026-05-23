@@ -4,7 +4,15 @@ import { verifyToken } from './auth.js';
 
 const router = express.Router();
 
-// Get user's wishlist
+const serverError = (res, message, error) => {
+  console.error(message, error);
+  res.status(500).json({
+    success: false,
+    message,
+    ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
+  });
+};
+
 router.get('/', verifyToken, async (req, res) => {
   try {
     const result = await pool.query(
@@ -15,56 +23,44 @@ router.get('/', verifyToken, async (req, res) => {
       [req.user.id]
     );
 
-    res.json({ 
-      success: true, 
-      data: result.rows 
+    res.json({
+      success: true,
+      data: result.rows,
     });
   } catch (error) {
-    console.error('Wishlist fetch error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching wishlist',
-      error: error.message 
-    });
+    serverError(res, 'Error fetching wishlist', error);
   }
 });
 
-// Add to wishlist
 router.post('/', verifyToken, async (req, res) => {
   try {
     const { productId } = req.body;
 
     if (!productId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Product ID is required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID is required',
       });
     }
 
     const result = await pool.query(
-      `INSERT INTO wishlist (user_id, product_id) 
-       VALUES ($1, $2) 
+      `INSERT INTO wishlist (user_id, product_id)
+       VALUES ($1, $2)
        ON CONFLICT (user_id, product_id) DO NOTHING
        RETURNING *`,
       [req.user.id, productId]
     );
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'Added to wishlist',
-      data: result.rows[0] 
+      data: result.rows[0],
     });
   } catch (error) {
-    console.error('Wishlist add error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error adding to wishlist',
-      error: error.message 
-    });
+    serverError(res, 'Error adding to wishlist', error);
   }
 });
 
-// Remove from wishlist
 router.delete('/:productId', verifyToken, async (req, res) => {
   try {
     const { productId } = req.params;
@@ -74,21 +70,15 @@ router.delete('/:productId', verifyToken, async (req, res) => {
       [req.user.id, productId]
     );
 
-    res.json({ 
-      success: true, 
-      message: 'Removed from wishlist' 
+    res.json({
+      success: true,
+      message: 'Removed from wishlist',
     });
   } catch (error) {
-    console.error('Wishlist delete error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error removing from wishlist',
-      error: error.message 
-    });
+    serverError(res, 'Error removing from wishlist', error);
   }
 });
 
-// Check if product is in wishlist
 router.get('/:productId', verifyToken, async (req, res) => {
   try {
     const { productId } = req.params;
@@ -98,17 +88,12 @@ router.get('/:productId', verifyToken, async (req, res) => {
       [req.user.id, productId]
     );
 
-    res.json({ 
-      success: true, 
-      inWishlist: result.rows.length > 0 
+    res.json({
+      success: true,
+      inWishlist: result.rows.length > 0,
     });
   } catch (error) {
-    console.error('Wishlist check error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error checking wishlist',
-      error: error.message 
-    });
+    serverError(res, 'Error checking wishlist', error);
   }
 });
 
