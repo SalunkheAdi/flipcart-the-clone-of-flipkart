@@ -139,7 +139,7 @@ const products = [
     rating: 4.7,
     reviews_count: 987,
     stock: 25,
-    image_url: 'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?w=500',
+    image_url: 'https://cdn.sforum.vn/sforum/wp-content/uploads/2023/11/nen-mua-Macbook-Pro-14-inch-M3-hay-M3-Pro-cover.jpeg',
     specifications: JSON.stringify({
       processor: 'M3 Max',
       ram: '16GB',
